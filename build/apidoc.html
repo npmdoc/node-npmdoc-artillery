@@ -1,0 +1,509 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/shoreditch-ops/artillery#readme"
+
+    >artillery (v1.5.6)</a>
+</h1>
+<h4>Load-testing for HTTP and WebSocket-based applications</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.artillery">module artillery</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.artillery.convert">
+            function <span class="apidocSignatureSpan">artillery.</span>convert
+            <span class="apidocSignatureSpan">(filename)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.artillery.dino">
+            function <span class="apidocSignatureSpan">artillery.</span>dino
+            <span class="apidocSignatureSpan">(options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.artillery.quick">
+            function <span class="apidocSignatureSpan">artillery.</span>quick
+            <span class="apidocSignatureSpan">(url, options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.artillery.report">
+            function <span class="apidocSignatureSpan">artillery.</span>report
+            <span class="apidocSignatureSpan">(jsonReportPath, options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.artillery.run">
+            function <span class="apidocSignatureSpan">artillery.</span>run
+            <span class="apidocSignatureSpan">(scriptPath, options)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.artillery" id="apidoc.module.artillery">module artillery</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.artillery.convert" id="apidoc.element.artillery.convert">
+        function <span class="apidocSignatureSpan">artillery.</span>convert
+        <span class="apidocSignatureSpan">(filename)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function convert(filename) {
+  let contents = fs.readFileSync(filename, &#x27;utf8&#x27;);
+  if (filename.endsWith(&#x27;json&#x27;)) {
+    let json = JSON.parse(contents);
+    let yaml = YAML.dump(json);
+    let newFilename = path.basename(filename, &#x27;.json&#x27;) + &#x27;.yml&#x27;;
+    if (!fs.existsSync(newFilename)) {
+      fs.writeFileSync(newFilename, yaml, &#x27;utf8&#x27;);
+    } else {
+      console.log(`File ${newFilename} already exists, not overwriting`);
+      process.exit(1);
+    }
+  } else if (filename.endsWith(&#x27;yml&#x27;) || filename.endsWith(&#x27;yaml&#x27;)) {
+    let yaml = YAML.load(contents);
+    let json = JSON.stringify(yaml, null, 2);
+    let newFilename = path.basename(filename, &#x27;.yml&#x27;) + &#x27;.json&#x27;;
+    if (!fs.existsSync(newFilename)) {
+      fs.writeFileSync(newFilename, json, &#x27;utf8&#x27;);
+    } else {
+      console.log(`File ${newFilename} already exists, not overwriting`);
+      process.exit(1);
+    }
+  } else {
+    console.log(&#x27;File name should end with json or y[a]ml&#x27;);
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.artillery.dino" id="apidoc.element.artillery.dino">
+        function <span class="apidocSignatureSpan">artillery.</span>dino
+        <span class="apidocSignatureSpan">(options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function dino(options) {
+  const balloon = !options.quiet ?
+    &#x27; ____________\n&#x27; +
+    &#x27;&#x3c; artillery! &#x3e;\n&#x27; +
+    &#x27; ------------\n&#x27;
+  :
+    &#x27; _______________________\n&#x27; +
+    &#x27;&#x3c; You can\&#x27;t silence me! &#x3e;\n&#x27; +
+    &#x27; -----------------------\n&#x27;;
+
+  console.log(balloon +
+&#x27;          \\\n&#x27; +
+&#x27;           \\&#x27;);
+  let today = new Date();
+  let year = today.getFullYear();
+  let month = today.getMonth() + 1;
+  let day = today.getDate();
+  let i = year * month * day % dinos.length;
+  console.log(dinos[i]);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.artillery.quick" id="apidoc.element.artillery.quick">
+        function <span class="apidocSignatureSpan">artillery.</span>quick
+        <span class="apidocSignatureSpan">(url, options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function quick(url, options) {
+
+  var rate = options.r || options.rate;
+  var duration = options.d || options.duration;
+  var arrivalCount = options.c || options.count;
+
+  let script = {
+    config: {
+      target: &#x27;&#x27;,
+      phases: [
+      ],
+      mode: &#x27;uniform&#x27;
+    },
+    scenarios: [
+      {
+        flow: [
+
+        ]
+      }
+    ]
+  };
+
+  let p = parse(url);
+  let target = p.protocol + &#x27;//&#x27; + p.host;
+  script.config.target = target;
+
+  if (options.count &#x26;&#x26; options.rate) {
+    console.log(&#x27;Error: either a fixed number of arrivals or arrivals per &#x27; +
+                &#x27;second should be set, not both&#x27;);
+    process.exit(1);
+  }
+
+  if (options.insecure &#x26;&#x26; p.protocol.match(/https/)) {
+    script.config.tls = {
+      rejectUnauthorized: false
+    };
+  }
+
+  if (options.rate) {
+    script.config.phases.push({
+      duration: options.duration || 60,
+      arrivalRate: options.rate || 20
+    });
+  } else if (options.count) {
+    script.config.phases.push({
+      duration: options.duration || Math.ceil(options.count / 50),
+      arrivalCount: options.count || 1
+    });
+  } else {
+    console.log(&#x27;Error: either arrival rate or an arrival count must be &#x27; +
+                &#x27;specified&#x27;);
+    process.exit(1);
+  }
+
+  let requestSpec = {};
+  if (options.payload &#x26;&#x26; p.protocol.match(/http/)) {
+    requestSpec.post = {
+      url: url,
+      headers: {&#x27;Content-Type&#x27;: options.contentType || &#x27;application/json&#x27;},
+      body: options.payload || &#x27;&#x27;
+    };
+  } else if (options.payload &#x26;&#x26; p.protocol.match(/ws/)) {
+    requestSpec.send = options.payload;
+  } else if (p.protocol.match(/http/)) {
+    requestSpec.get = {url: url};
+  } else if (p.protocol.match(/ws/)) {
+    requestSpec.send = &#x27;hello from Artillery&#x27;;
+  } else {
+    throw new Error(&#x27;Unknown protocol&#x27;);
+  }
+
+  if (options.num) {
+    requestSpec = {
+      loop: [requestSpec],
+      count: options.num
+    };
+  }
+
+  debug(&#x27;requestSpec: %s&#x27;, JSON.stringify(requestSpec, null, 2));
+
+  script.scenarios[0].flow.push(requestSpec);
+  if (p.protocol.match(/ws/)) {
+    script.scenarios[0].engine = &#x27;ws&#x27;;
+  }
+
+  let tmpf = tmp.fileSync();
+  fs.writeFileSync(tmpf.name, JSON.stringify(script, null, 2), {flag: &#x27;w&#x27;});
+  run(tmpf.name, {quiet: options.quiet, output: options.output});
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.artillery.report" id="apidoc.element.artillery.report">
+        function <span class="apidocSignatureSpan">artillery.</span>report
+        <span class="apidocSignatureSpan">(jsonReportPath, options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function report(jsonReportPath, options) {
+
+  let reportFilename = options.output || jsonReportPath + &#x27;.html&#x27;;
+
+  let data = JSON.parse(fs.readFileSync(jsonReportPath, &#x27;utf-8&#x27;));
+  let templateFn = path.join(
+    path.dirname(__filename),
+    &#x27;../report/index.html.ejs&#x27;);
+  let template = fs.readFileSync(templateFn, &#x27;utf-8&#x27;);
+  let compiledTemplate = l.template(template);
+  let html = compiledTemplate({report: JSON.stringify(data, null, 2)});
+  fs.writeFileSync(
+    reportFilename,
+    html,
+    {encoding: &#x27;utf-8&#x27;, flag: &#x27;w&#x27;});
+  console.log(&#x27;Report generated: %s&#x27;, reportFilename);
+
+  if (!options.output) {
+    openfile(reportFilename);
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+    phase.index,
+    (phase.name ? &#x27; (&#x27; + phase.name + &#x27;)&#x27; : &#x27;&#x27;),
+    phase.duration || phase.think);
+  spinnerOn();
+});
+
+runner.events.on(&#x27;stats&#x27;, function(stats) {
+  let report = stats.<span class="apidocCodeKeywordSpan">report</span>();
+  intermediates.push(report);
+  spinnerOff();
+  log(&#x27;Report for the previous %ss @ %s&#x27;,
+      script.config.statsInterval,
+      report.timestamp);
+  if (!options.quiet) {
+    printReport(report);
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.artillery.run" id="apidoc.element.artillery.run">
+        function <span class="apidocSignatureSpan">artillery.</span>run
+        <span class="apidocSignatureSpan">(scriptPath, options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function run(scriptPath, options) {
+  let logfile;
+
+  // is the destination a directory that exists?
+  let isDir = false;
+  if (options.output &#x26;&#x26; options.output !== defaultOptions.output) {
+    try {
+      isDir = fs.statSync(options.output).isDirectory();
+    } catch (err) {
+      // ENOENT, don&#x27;t need to do anything
+    }
+  }
+
+  const defaultFormat = &#x27;[artillery_report_]YMMDD_HHmmSS[.json]&#x27;;
+  if (!isDir &#x26;&#x26; options.output) {
+    // -o is set with a filename (existing or not)
+    logfile = options.output;
+  } else if (!isDir &#x26;&#x26; !options.output) {
+    // no -o set
+    logfile = moment().format(defaultOptions.output ||
+                              defaultFormat);
+  } else {
+    // -o is set with a directory
+    logfile = path.join(options.output, moment().format(defaultOptions.output ||
+                                                        defaultFormat));
+  }
+
+  function log() {
+    if (options.quiet) { return; }
+    console.log.apply(console, arguments);
+  }
+
+  async.waterfall([
+    async.constant(scriptPath),
+    readScript,
+    parseScript,
+    checkTimersBug,
+    checkIfXPathIsUsed,
+    function(script, callback) {
+      return callback(null, script, scriptPath, options);
+    },
+    checkConfig,
+    readPayload
+  ], function done(err, script) {
+    if (err) {
+      console.log(err.message);
+      process.exit(1);
+    }
+
+    script.config.statsInterval = script.config.statsInterval || 10;
+
+    log(&#x27;Log file: %s&#x27;, logfile);
+
+      var spinnerOn = function() {
+        if (!options.quiet &#x26;&#x26; process.stdout.isTTY) {
+          cli.spinner(&#x27;&#x27;);
+        }
+      };
+      var spinnerOff = function() {
+        if (!options.quiet &#x26;&#x26; process.stdout.isTTY) {
+          cli.spinner(&#x27;&#x27;, true);
+        }
+      };
+
+      let runner = createRunner(script,
+                                script.payload,
+                                {
+                                  environment: options.environment,
+                                  // This is used in the worker to resolve
+                                  // the path to the processor module
+                                  scriptPath: scriptPath
+                                });
+      let intermediates = [];
+
+      runner.events.on(&#x27;phaseStarted&#x27;, function(phase) {
+        spinnerOff();
+        log(
+          &#x27;Phase %s%s started - duration: %ss&#x27;,
+          phase.index,
+          (phase.name ? &#x27; (&#x27; + phase.name + &#x27;)&#x27; : &#x27;&#x27;),
+          phase.duration || phase.think);
+        spinnerOn();
+      });
+
+      runner.events.on(&#x27;stats&#x27;, function(stats) {
+        let report = stats.report();
+        intermediates.push(report);
+        spinnerOff();
+        log(&#x27;Report for the previous %ss @ %s&#x27;,
+            script.config.statsInterval,
+            report.timestamp);
+        if (!options.quiet) {
+          printReport(report);
+        }
+        spinnerOn();
+      });
+
+      runner.events.on(&#x27;done&#x27;, function(allStats) {
+        let report = allStats.report();
+        delete report.concurrency; // doesn&#x27;t make sense in this context
+        delete report.pendingRequests;
+
+        spinnerOff();
+        log(&#x27;all scenarios completed&#x27;);
+        log(&#x27;Complete report @ %s&#x27;, report.timestamp);
+
+        if (!options.quiet) {
+          printReport(report, { showScenarioCounts: true });
+        }
+        report.phases = _.get(script, &#x27;config.phases&#x27;, []);
+        delete report.latencies;
+
+        fs.writeFileSync(
+          logfile, JSON.stringify({
+            aggregate: report,
+            intermediate: intermediates
+          }, null, 2),
+          {flag: &#x27;w&#x27;});
+
+        if (script.config.ensure) {
+          const latency = report.latency;
+          _.each(script.config.ensure, function(max, k) {
+
+            let bucket = k === &#x27;p50&#x27; ? &#x27;median&#x27; : k;
+            if (latency[bucket]) {
+              if (latency[bucket] &#x3e; max) {
+                const msg = util.format(
+                  &#x27;ensure condition failed: ensure.%s &#x3c; %s&#x27;, bucket, max);
+                log(msg);
+                process.exit(1);
+              }
+            }
+          });
+        }
+      });
+
+      spinnerOn();
+      runner.run(); ...</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+var runner = createRunner(opts.script, opts.payload, opts.options);
+
+runner.on(&#x27;phaseStarted&#x27;, onPhaseStarted);
+runner.on(&#x27;phaseCompleted&#x27;, onPhaseCompleted);
+runner.on(&#x27;stats&#x27;, onStats);
+runner.on(&#x27;done&#x27;, onDone);
+
+runner.<span class="apidocCodeKeywordSpan">run</span>();
+
+function onPhaseStarted(phase) {
+  send({ event: &#x27;phaseStarted&#x27;, phase: phase });
+}
+
+function onPhaseCompleted(phase) {
+  send({ event: &#x27;phaseCompleted&#x27;, phase: phase });
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
